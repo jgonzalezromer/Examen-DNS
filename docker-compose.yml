@@ -1,0 +1,34 @@
+services:
+  Contenedor1:
+    image: internetsystemsconsortium/bind9:9.18
+    container_name: DNS_Examen
+    ports:
+      - 54:53/udp
+      - 54:53/tcp
+      - 127.0.0.1:953:953/tcp
+    volumes:
+      - ./etc/bind:/etc/bind
+      - ./var/cache/bind:/var/cache/bind
+      - ./var/lib/bind:/var/cache/bind
+    restart: always
+    networks:
+      Red_Examen:
+        ipv4_address: 172.16.0.1
+  Contenedor2:
+    image: alpine
+    container_name: Cliente_Examen
+    tty: true
+    stdin_open: true
+    networks:
+      Red_Examen:
+        ipv4_address: 172.16.0.10
+    dns:
+      - 172.16.0.1
+networks:
+  Red_Examen:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/16
+          ip_range: 172.16.0.0/24
+          gateway: 172.16.0.254
